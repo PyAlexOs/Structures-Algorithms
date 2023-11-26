@@ -13,6 +13,5 @@ struct word {
 
 void text2bin(istream& text_file, ostream& bin_file);
 void bin2tree(binTree& tree, istream& file);
-word getWord(istream& file, int index);
 word findWord(binTree& tree, istream& file, string key);
 bool eraseWord(binTree& tree, fstream& file, string key, string file_path);

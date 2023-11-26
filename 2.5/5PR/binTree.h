@@ -5,6 +5,7 @@ struct binTree {
     Node* root;
     binTree() : root(nullptr) {};
     binTree(Node* _root) : root(_root) {};
+    ~binTree();
 
     Node* search(string key);
     int getIndex(string key);
@@ -18,5 +19,5 @@ private:
     Node* getMax(Node* from);
     Node* getMin(Node* from);
     static void printSubTree(Node* current, char from = ' ', size_t from_size = 0, size_t level = 0);
+    void clear(Node* current);
 };
-

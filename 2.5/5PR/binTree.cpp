@@ -156,3 +156,19 @@ void binTree::printSubTree(Node* current, char from, size_t from_size, size_t le
         printSubTree(current->left, '\\', from_size + current->data.key.size(), level + 1);
     }
 }
+
+void binTree::clear(Node* current) {
+    if (current->left != nullptr) {
+        clear(current->left);
+    }
+
+    if (current->right != nullptr) {
+        clear(current->right);
+    }
+
+    delete current;
+};
+
+binTree::~binTree() {
+    clear(this->root);
+}

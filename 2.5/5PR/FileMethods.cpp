@@ -30,28 +30,22 @@ void bin2tree(binTree& tree, istream& file) {
     }
 }
 
-word getWord(istream& file, int index) {
-    word current;
-    file.seekg((index) * sizeof(word), ios::beg);
-    file.read((char*)&current, sizeof(word));
-
-    if (file.bad() || file.fail()) {
-        current.name[0] = '\0';
-    }
-    return current;
-}
-
 word findWord(binTree& tree, istream& file, string key) {
     word current;
-
 
     int index = tree.getIndex(key);
     if (index == -1) {
         current.name[0] = '\0';
     }
     else {
-        current = getWord(file, index);
+        file.seekg((index) * sizeof(word), ios::beg);
+        file.read((char*)&current, sizeof(word));
+
+        if (file.bad() || file.fail()) {
+            current.name[0] = '\0';
+        }
     }
+
     return current;
 }
 

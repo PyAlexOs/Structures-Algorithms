@@ -14,7 +14,7 @@ int main() {
 	//D:/MIREA/DataProccessingStructuresAlgorithms/2.5/files/data.txt
 	//D:/MIREA/DataProccessingStructuresAlgorithms/2.5/files/data.dat
 
-	binTree tree = binTree();
+	binTree* tree = new binTree();
 	int action;
 	while (true)
 	{
@@ -59,7 +59,7 @@ int main() {
 			fin.open(bin_file, ios::binary | ios::in);
 
 			if (fin.is_open()) {
-				bin2tree(tree, fin);
+				bin2tree(*tree, fin);
 				if (fin.bad()) {
 					cout << "Ошибка создания БДП из данных двоичного файла." << endl;
 					return 1;
@@ -85,7 +85,7 @@ int main() {
 				cin >> key;
 
 				auto start = chrono::high_resolution_clock::now();
-				word found = findWord(tree, fin, key);
+				word found = findWord(*tree, fin, key);
 				auto end = chrono::high_resolution_clock::now();
 
 				cout << endl << "--------------------------------------" << endl;
@@ -120,7 +120,7 @@ int main() {
 				string key;
 				cout << "Введите слово: ";
 				cin >> key;
-				bool status = eraseWord(tree, file, key, bin_file);
+				bool status = eraseWord(*tree, file, key, bin_file);
 				if (fin.bad()) {
 					cout << "Ошибка при удалении слова из файла." << endl;
 					return 1;
@@ -142,11 +142,12 @@ int main() {
 		}
 
 		case 5: {
-			tree.print();
+			tree->print();
 			break;
 		}
 
 		default: {
+			delete tree;
 			return 0;
 		}
 		}

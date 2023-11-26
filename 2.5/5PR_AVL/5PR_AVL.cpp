@@ -5,18 +5,25 @@ int main() {
 	system("chcp 1251");
 
 	AVLtree tree = AVLtree();
-	string a[11] = { "газ", "воздух", "детонатор", "дочь", "прикол", "заколка", "кзрыв", "кол", "дрова",
+	string base[11] = { "газ", "воздух", "детонатор", "дочь", "прикол", "заколка", "взрыв", "кол", "дрова",
 		"поросенок", "яблоня" };
-	string b[6] = { "b", "a", "d", "c", "e", "f" };
-	string c[6] = { "e", "c", "f", "b", "d", "a" };
-	for (int i = 0; i < 6; ++i) {
-		tree.add(c[i], i);
+	string ll[6] = { "b", "a", "d", "c", "e", "f" };
+	string rr[6] = { "e", "c", "f", "b", "d", "a" };
+	string lr[6] = { "e", "b", "f", "a", "d", "c" };
+	string rl[6] = { "b", "a", "c", "e", "d", "c" };
+	for (int i = 0; i < 11; ++i) {
+		tree.add(base[i], i);
 	}
 	tree.print();
 
 	return 0;
 }
 
+//#include "fileMethods.h"
+//#include <chrono>
+//
+//int main() {
+//	system("chcp 1251");
 //	string text_file, bin_file;
 //	ifstream fin;
 //	ofstream fout;
@@ -28,7 +35,7 @@ int main() {
 //	//D:/MIREA/DataProccessingStructuresAlgorithms/2.5/files/data.txt
 //	//D:/MIREA/DataProccessingStructuresAlgorithms/2.5/files/data.dat
 //
-//	AVLtree tree = AVLtree();
+//	binTree* tree = new binTree();
 //	int action;
 //	while (true)
 //	{
@@ -73,7 +80,7 @@ int main() {
 //			fin.open(bin_file, ios::binary | ios::in);
 //
 //			if (fin.is_open()) {
-//				bin2tree(tree, fin);
+//				bin2tree(*tree, fin);
 //				if (fin.bad()) {
 //					cout << "Ошибка создания БДП из данных двоичного файла." << endl;
 //					return 1;
@@ -99,7 +106,7 @@ int main() {
 //				cin >> key;
 //
 //				auto start = chrono::high_resolution_clock::now();
-//				word found = findWord(tree, fin, key);
+//				word found = findWord(*tree, fin, key);
 //				auto end = chrono::high_resolution_clock::now();
 //
 //				cout << endl << "--------------------------------------" << endl;
@@ -134,7 +141,7 @@ int main() {
 //				string key;
 //				cout << "Введите слово: ";
 //				cin >> key;
-//				bool status = eraseWord(tree, file, key, bin_file);
+//				bool status = eraseWord(*tree, file, key, bin_file);
 //				if (fin.bad()) {
 //					cout << "Ошибка при удалении слова из файла." << endl;
 //					return 1;
@@ -156,11 +163,12 @@ int main() {
 //		}
 //
 //		case 5: {
-//			tree.print();
+//			tree->print();
 //			break;
 //		}
 //
 //		default: {
+//			delete tree;
 //			return 0;
 //		}
 //		}
