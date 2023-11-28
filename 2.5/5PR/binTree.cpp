@@ -1,19 +1,19 @@
 #include "binTree.h"
 
 Node* binTree::search(string key) {
-    return searchFrom(key, this->root);
+    return searchFrom(this->root, key);
 }
 
-Node* binTree::searchFrom(string key, Node* current) {
+Node* binTree::searchFrom(Node* current, string key) {
     if (current == nullptr || key == current->data.key) {
         return current;
     }
     else {
         if (key < current->data.key) {
-            return searchFrom(key, current->left);
+            return searchFrom(current->left, key);
         }
         else {
-            return searchFrom(key, current->right);
+            return searchFrom(current->right, key);
         }
     }
 }
@@ -26,117 +26,76 @@ int binTree::getIndex(string key) {
     return found->data.position;
 }
 
-bool binTree::add(string _key, int _position) {
+void binTree::add(string _key, int _position) {
     if (this->root == nullptr) {
-        this->root = new Node(_key, _position, nullptr);
-        return true;
+        this->root = new Node(_key, _position);
     }
     else {
-        return addTo(this->root, new Node(_key, _position, nullptr));
+        addTo(this->root, new Node(_key, _position));
     }
 }
 
-bool binTree::addTo(Node* current, Node* new_node) {
-    if (new_node->data.key < current->data.key) {
-        if (current->left == nullptr) {
-            current->left = new_node;
-            new_node->parent = current;
-            return true;
-        }
-        else {
-            return addTo(current->left, new_node);
-        }
+Node* binTree::addTo(Node* current, Node* new_node) {
+    if (current == nullptr) {
+        return new_node;
     }
-    else if (new_node->data.key > current->data.key) {
-        if (current->right == nullptr) {
-            current->right = new_node;
-            new_node->parent = current;
-            return true;
-        }
-        else {
-            return addTo(current->right, new_node);
-        }
+
+    if (new_node->data.key < current->data.key) {
+        current->left = addTo(current->left, new_node);
     }
     else {
-        return false;
+        current->right = addTo(current->right, new_node);
     }
+    return current;
 }
 
 int binTree::erase(string key) {
-    Node* found = search(key);
-    if (found == nullptr) {
-        return -1;
-    }
-    int position = found->data.position;
-
-    if (found->left == nullptr && found->right == nullptr) {
-        if (found->parent != nullptr) {
-            found->parent->left == found ? found->parent->left = nullptr : found->parent->right = nullptr;
-        }
-        else {
-            this->root = nullptr;
-        }
-        delete found;
-    }
-
-    else if (found->left == nullptr) {
-        if (found->parent != nullptr) {
-            found->parent->left == found ? found->parent->left = found->right : found->parent->right = found->right;
-            found->right->parent = found->parent;
-        }
-        else {
-            this->root = found->right;
-            root->parent = nullptr;
-        }
-        delete found;
-    }
-
-    else if (found->right == nullptr) {
-        if (found->parent != nullptr) {
-            found->parent->left == found ? found->parent->left = found->left : found->parent->right = found->left;
-            found->left->parent = found->parent;
-        }
-        else {
-            this->root = found->left;
-            root->parent = nullptr;
-        }
-        delete found;
-    }
-
-    else {
-        Node* leftMax = getMax(found->left);
-        Node* rightMin = getMin(found->right);
-
-        if (found->isNeightbor(leftMax, rightMin)) {
-            record copy = leftMax->data;
-            erase(leftMax->data.key);
-            found->data = copy;
-        }
-        else {
-            record copy = rightMin->data;
-            erase(rightMin->data.key);
-            found->data = copy;
-        }
-    }
+    int position = -1;
+    remove(this->root, key, position);
     return position;
 }
 
-Node* binTree::getMax(Node* from) {
-    if (from->right == nullptr) {
-        return from;
+Node* binTree::remove(Node* current, string key, int& position) {
+    if (current == nullptr) {
+        return nullptr;
+    }
+
+    if (key < current->data.key) {
+        current->left = remove(current->left, key, position);
+    }
+    else if (key > current->data.key){
+        current->right = remove(current->right, key, position);
     }
     else {
-        return getMax(from->right);
+        Node* right = current->right, * left = current->left;
+        position = current->data.position;
+        delete current;
+
+        if (right == nullptr) {
+            return left;
+        }
+
+        Node* auxiliary = getMin(right);
+        auxiliary->right = removeMin(right);
+        auxiliary->left = left;
+        return auxiliary;
     }
+    return current;
+}
+
+Node* binTree::removeMin(Node* current) {
+    if (current->left == nullptr) {
+        return current->right;
+    }
+    current->left = removeMin(current->left);
+    return current;
 }
 
 Node* binTree::getMin(Node* from) {
     if (from->left == nullptr) {
         return from;
     }
-    else {
-        return getMin(from->left);
-    }
+    return getMin(from->left);
 }
 
 void binTree::print() {
@@ -170,5 +129,7 @@ void binTree::clear(Node* current) {
 };
 
 binTree::~binTree() {
-    clear(this->root);
+    if (this->root != nullptr) {
+        clear(this->root);
+    }
 }

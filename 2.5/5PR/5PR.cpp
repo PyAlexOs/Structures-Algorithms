@@ -15,6 +15,7 @@ int main() {
 	//D:/MIREA/DataProccessingStructuresAlgorithms/2.5/files/data.dat
 
 	binTree* tree = new binTree();
+	int position = 0;
 	int action;
 	while (true)
 	{
@@ -22,9 +23,10 @@ int main() {
 		cout << "1. Преобразование текстового файла в двоичный" << endl;
 		cout << "2. Перевод двоичного файла в БДП" << endl;
 		cout << "3. Поиск узла в БДП по ключу и вывод из двоичного файла" << endl;
-		cout << "4. Удаление записи из БДП и двоичного файла" << endl;
-		cout << "5. Вывод БДП" << endl;
-		cout << "6. Выйти" << endl;
+		cout << "4. Добавление узла в БДП и двоичный файл по ключу" << endl;
+		cout << "5. Удаление записи из БДП и двоичного файла" << endl;
+		cout << "6. Вывод БДП" << endl;
+		cout << "7. Выйти" << endl;
 
 		cin >> action;
 		switch (action) {
@@ -59,7 +61,7 @@ int main() {
 			fin.open(bin_file, ios::binary | ios::in);
 
 			if (fin.is_open()) {
-				bin2tree(*tree, fin);
+				bin2tree(*tree, fin, position);
 				if (fin.bad()) {
 					cout << "Ошибка создания БДП из данных двоичного файла." << endl;
 					return 1;
@@ -115,6 +117,33 @@ int main() {
 		case 4: {
 			cout << "Введите имя двоичного файла: ";
 			cin >> bin_file;
+			file.open(bin_file, ios::out | ios::app | ios::binary);
+			if (file.is_open()) {
+				string key;
+				unsigned int count;
+				cout << "Введите слово: ";
+				cin >> key;
+				cout << "Введите количество вхождений в текст: ";
+				cin >> count;
+
+				addWord(*tree, file, key, count, position);
+				if (fin.bad()) {
+					cout << "Ошибка при добавлении слова в файл." << endl;
+					return 1;
+				}
+				cout << "Запись успешно удалена." << endl;
+				file.close();
+			}
+
+			else {
+				cout << "Двоичный файл не найден или не существует." << endl;
+			}
+			break;
+		}
+
+		case 5: {
+			cout << "Введите имя двоичного файла: ";
+			cin >> bin_file;
 			file.open(bin_file, ios::in | ios::out | ios::binary);
 			if (file.is_open()) {
 				string key;
@@ -128,6 +157,7 @@ int main() {
 
 				if (status) {
 					cout << "Запись успешно удалена." << endl;
+					position--;
 				}
 				else {
 					cout << "Запись с таким ключом не найдена." << endl;
@@ -141,7 +171,7 @@ int main() {
 			break;
 		}
 
-		case 5: {
+		case 6: {
 			tree->print();
 			break;
 		}

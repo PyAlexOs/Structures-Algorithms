@@ -17,15 +17,13 @@ void text2bin(istream& text_file, ostream& bin_file) {
     }
 }
 
-void bin2tree(binTree& tree, istream& file) {
-    int position = 0;
+void bin2tree(binTree& tree, istream& file, int& position) {
+    position = 0;
     word current;
 
     file.read((char*)&current, sizeof(word));
     while (!file.eof()) {
-        if (!tree.add(current.name, position++)) {
-            cout << "Провалена попытка добавления слова '" << current.name << "' в БДП." << endl;
-        }
+        tree.add(current.name, position++);
         file.read((char*)&current, sizeof(word));
     }
 }
@@ -45,8 +43,16 @@ word findWord(binTree& tree, istream& file, string key) {
             current.name[0] = '\0';
         }
     }
-
     return current;
+}
+
+void addWord(binTree& tree, ostream& file, string key, unsigned int count, int& position) {
+    word current = word();
+    strcpy(current.name, key.c_str());
+    current.count = count;
+
+    tree.add(key, position++);
+    file.write((char*)&current, sizeof(word));
 }
 
 bool eraseWord(binTree& tree, fstream& file, string key, string file_path) {
