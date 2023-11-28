@@ -16,14 +16,18 @@ struct AVLtree {
 private:
     Node* searchFrom(string key, Node* current);
     Node* addTo(Node* current, Node* new_node);
-    void printSubTree(Node* current, char from = ' ', size_t from_size = 0, size_t level = 0);
+    Node* remove(Node* current, string key, int& position);
+    Node* removeMin(Node* current);
 
     size_t getHeight(Node* current);
     void updateHeight(Node* current);
     int getBalance(Node* current);
-    Node* saveBalance(Node* current);
 
+    Node* saveBalance(Node* current);
     Node* fixRight(Node* current);
     Node* fixLeft(Node* current);
+
+    Node* getMin(Node* from);
+    void printSubTree(Node* current, char from = ' ', size_t from_size = 0, size_t level = 0);
     void clear(Node* current);
 };

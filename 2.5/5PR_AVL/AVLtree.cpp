@@ -27,7 +27,10 @@ int AVLtree::getIndex(string key) {
 }
 
 size_t AVLtree::getHeight(Node* current) {
-    return current != nullptr ? current->height : 0;
+    if (current == nullptr) {
+        return 0;
+    }
+    return current->height;
 }
 
 void AVLtree::updateHeight(Node* current) {
@@ -40,10 +43,10 @@ int AVLtree::getBalance(Node* current) {
 
 void AVLtree::add(string _key, int _position) {
     if (this->root == nullptr) {
-        this->root = new Node(_key, _position, nullptr);
+        this->root = new Node(_key, _position);
     }
     else {
-        addTo(this->root, new Node(_key, _position, nullptr));
+        addTo(this->root, new Node(_key, _position));
     }
 }
 
@@ -54,13 +57,10 @@ Node* AVLtree::addTo(Node* current, Node* new_node) {
 
     if (new_node->data.key < current->data.key) {
         current->left = addTo(current->left, new_node);
-        current->left->parent = current;
     }
     else {
         current->right = addTo(current->right, new_node);
-        current->right->parent = current;
     }
-
     return saveBalance(current);
 }
 
@@ -82,20 +82,13 @@ Node* AVLtree::saveBalance(Node* current) {
 }
 
 Node* AVLtree::fixRight(Node* current) { // Left node in Left subtree
-    if (current->parent == nullptr) {
+    if (current == root) {
         this->root = current->left;
     }
 
     Node* center = current->left;
-    center->parent = current->parent;
-
     current->left = center->right;
-    if (current->left != nullptr) {
-        current->left->parent = current;
-    }
-
     center->right = current;
-    center->right->parent = center;
 
     updateHeight(current);
     updateHeight(center);
@@ -103,20 +96,13 @@ Node* AVLtree::fixRight(Node* current) { // Left node in Left subtree
 }
 
 Node* AVLtree::fixLeft(Node* current) { // Right node in Right subtree
-    if (current->parent == nullptr) {
+    if (current == root) {
         this->root = current->right;
     }
 
     Node* center = current->right;
-    center->parent = current->parent;
-
     current->right = center->left;
-    if (current->right != nullptr) {
-        current->right->parent = current;
-    }
-
     center->left = current;
-    center->left->parent = center;
 
     updateHeight(current);
     updateHeight(center);
@@ -124,49 +110,52 @@ Node* AVLtree::fixLeft(Node* current) { // Right node in Right subtree
 }
 
 int AVLtree::erase(string key) {
-    Node* found = search(key);
-    if (found == nullptr) {
-        return -1;
-    }
-    int position = found->data.position;
-
-    if (found->left == nullptr && found->right == nullptr) {
-        if (found->parent != nullptr) {
-            found->parent->left == found ? found->parent->left = nullptr : found->parent->right = nullptr;
-        }
-        else {
-            this->root = nullptr;
-        }
-        delete found;
-    }
-
-    else if (found->left == nullptr) {
-        if (found->parent != nullptr) {
-            found->parent->left == found ? found->parent->left = found->right : found->parent->right = found->right;
-            found->right->parent = found->parent;
-        }
-        else {
-            this->root = found->right;
-            root->parent = nullptr;
-        }
-        delete found;
-    }
-
-    else if (found->right == nullptr) {
-        if (found->parent != nullptr) {
-            found->parent->left == found ? found->parent->left = found->left : found->parent->right = found->left;
-            found->left->parent = found->parent;
-        }
-        else {
-            this->root = found->left;
-            root->parent = nullptr;
-        }
-        delete found;
-    }
+    int position = -1;
+    remove(this->root, key, position);
+    return position;
 }
 
-Node* remove(Node* rubbish) {
-    return nullptr;
+Node* AVLtree::remove(Node* current, string key, int& position) {
+    if (current == nullptr) {
+        return nullptr;
+    }
+
+    if (key < current->data.key) {
+        current->left = remove(current->left, key, position);
+    }
+    else if (key > current->data.key) {
+        current->right = remove(current->right, key, position);
+    }
+    else {
+        Node* right = current->right, * left = current->left;
+        position = current->data.position;
+        delete current;
+
+        if (right == nullptr) {
+            return left;
+        }
+
+        Node* auxiliary = getMin(right);
+        auxiliary->right = removeMin(right);
+        auxiliary->left = left;
+        return saveBalance(auxiliary);
+    }
+    return saveBalance(current);
+}
+
+Node* AVLtree::removeMin(Node* current) {
+    if (current->left == nullptr) {
+        return current->right;
+    }
+    current->left = removeMin(current->left);
+    return saveBalance(current);
+}
+
+Node* AVLtree::getMin(Node* from) {
+    if (from->left == nullptr) {
+        return from;
+    }
+    return getMin(from->left);
 }
 
 void AVLtree::print() {
@@ -184,7 +173,7 @@ void AVLtree::printSubTree(Node* current, char from, size_t from_size, size_t le
 
         cout << (level > 0 ? (level > 1 ? string(from_size + (level - 1) * 5, ' ') : string(from_size, ' ')) + from + "----" : "");
         cout << current->data.key;
-        cout << " (b=" << getBalance(current) << ") " << (current->parent ? "p='" + current->parent->data.key + "'" : "root") << endl;
+        cout << " (b=" << getBalance(current) << ") " << endl;
 
         printSubTree(current->left, '\\', from_size + current->data.key.size(), level + 1);
     }
@@ -203,5 +192,7 @@ void AVLtree::clear(Node* current) {
 };
 
 AVLtree::~AVLtree() {
-    clear(this->root);
+    if (this->root != nullptr) {
+        clear(this->root);
+    }
 }
