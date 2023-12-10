@@ -48,7 +48,7 @@ word findWord(binTree& tree, istream& file, string key) {
 
 void addWord(binTree& tree, ostream& file, string key, unsigned int count, int& position) {
     word current = word();
-    strcpy(current.name, key.c_str());
+    strcpy_s(current.name, key.c_str());
     current.count = count;
 
     tree.add(key, position++);
@@ -66,7 +66,6 @@ bool eraseWord(binTree& tree, fstream& file, string key, string file_path) {
     file.read((char*)&last, sizeof(word));
 
     if (last.name != key) {
-        // Record couldn't be deleted if pointer would still be in that part of file
         file.seekg(ios::beg);
         file.seekp(index * sizeof(word), ios::beg);
         file.write((char*)&last, sizeof(word));

@@ -42,12 +42,7 @@ int AVLtree::getBalance(Node* current) {
 }
 
 void AVLtree::add(string _key, int _position) {
-    if (this->root == nullptr) {
-        this->root = new Node(_key, _position);
-    }
-    else {
-        addTo(this->root, new Node(_key, _position));
-    }
+    this->root = addTo(this->root, new Node(_key, _position));
 }
 
 Node* AVLtree::addTo(Node* current, Node* new_node) {
@@ -111,7 +106,7 @@ Node* AVLtree::fixLeft(Node* current) { // Right node in Right subtree
 
 int AVLtree::erase(string key) {
     int position = -1;
-    remove(this->root, key, position);
+    this->root = remove(this->root, key, position);
     return position;
 }
 

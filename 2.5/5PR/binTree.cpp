@@ -27,12 +27,7 @@ int binTree::getIndex(string key) {
 }
 
 void binTree::add(string _key, int _position) {
-    if (this->root == nullptr) {
-        this->root = new Node(_key, _position);
-    }
-    else {
-        addTo(this->root, new Node(_key, _position));
-    }
+    this->root = addTo(this->root, new Node(_key, _position));
 }
 
 Node* binTree::addTo(Node* current, Node* new_node) {
@@ -51,7 +46,7 @@ Node* binTree::addTo(Node* current, Node* new_node) {
 
 int binTree::erase(string key) {
     int position = -1;
-    remove(this->root, key, position);
+    this->root = remove(this->root, key, position);
     return position;
 }
 
